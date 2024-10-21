@@ -1,0 +1,42 @@
+name: Python Test Workflow
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - master
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_auto.py"
+
+  integration_tests:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run unit and integration tests
+        run: |
+          python -m unittest discover -s tests -p "test_auto.py"
+          python -m unittest discover -s tests -p "test_integration.py"
